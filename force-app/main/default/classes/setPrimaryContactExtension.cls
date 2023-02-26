@@ -16,6 +16,10 @@ public with sharing class setPrimaryContactExtension {
 
     public List<SelectOption> paginationSizeOptions{get;set;}
 
+    public String contactToUpdateId{get; set;}
+    public Contact contactToUpdate{get; set;}
+    public Boolean IsShowPopUp{get; set;}
+
     public setPrimaryContactExtension(ApexPages.StandardController sc) {
         this.acct = (Account)sc.getRecord();
         size = 10;
@@ -94,8 +98,22 @@ public with sharing class setPrimaryContactExtension {
             ];
         return results;
     }
+
+    public PageReference showPopUp() {
+        List<Contact> result = [SELECT Id, Name,
+                                Is_Primary_Contact__c
+                                FROM Contact
+                                WHERE Id = :contactToUpdateId];
+        if(result.size() > 0) {
+            contactToUpdate = result[0];
+        }
+
+        isShowPopUp = true;
+        return null;
+    }
+
+    public PageReference closePopUp() {
+        isShowPopUp = false;
+        return null;
+    }
 }
-
-// SELECT Id, Name, Title, Phone, Is_Primary_Contact__c FROM Contact WHERE AccountId = 'd00000Tbw2sAABAND' AND Name LIKE '%' ORDER BY Name, Is_Primary_contact__c LIMIT 25 OFFSET 0
-
-// 'AND Name LIKE ' + nameInput + 

@@ -1,4 +1,23 @@
 <apex:page standardController="Account" extensions="setPrimaryContactExtension">
+  <head>
+    <apex:slds /> 
+  </head>
+
+  <!-- Pop-up -->
+  <apex:outputPanel id="popup">
+    <apex:outputPanel styleClass="popup" rendered="{!isShowPopUp}">
+      <apex:form>
+        <apex:pageBlock title="Confirm your action">
+          <p style="text-align: center;">Are you sure you want to set <strong>{!contactToUpdate.Name}</strong>, <br/> as the primary contact of <strong>{!Account.Name}</strong>?</p>
+          
+          <apex:pageBlockButtons>
+            <apex:commandButton action="{!closePopUp}" value="Cancel" reRender="popup"/>
+          </apex:pageBlockButtons>
+        </apex:pageBlock>
+      </apex:form>
+    </apex:outputPanel>
+  </apex:outputPanel>
+
   <apex:form>
     <apex:pageBlock title="Account Primary Contact">
       <apex:pageBlockSection columns="2">
@@ -56,17 +75,34 @@
           <apex:outputField value="{!contact.Is_Primary_Contact__c}"/>
         </apex:column>
         <apex:column>
-          <p>test</p>
+          <!-- If contact is the primary, show icon -->
+          <apex:outputPanel rendered="{!contact.Is_Primary_Contact__c}">
+            <span class="slds-icon_container slds-icon-utility-check">
+              <svg aria-hidden="true" class="slds-icon slds-icon-text-default">
+                  <use xmlns:xlink="http://www.w3.org/1999/xlink" 
+                     xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#check">
+                  </use>
+              </svg>
+            <span class="slds-assistive-text">This is the primary contact.</span>
+          </span>
+        </apex:outputPanel>
+
+          <!-- If contact is not the primary, show link -->
+          <apex:commandLink rendered="{!!contact.Is_Primary_Contact__c}" value="Set Primary Contact" action="{!showPopUp}" reRender="popup"
+          >
+            <apex:param name="contactToUpdateId" value="{!contact.Id}" assignTo="{!contactToUpdateId}"/>
+          </apex:commandLink>
         </apex:column>
       </apex:pageBlockTable>
 
       <!-- Pagination -->
-      <apex:panelGrid columns="8">
+      <apex:panelGrid columns="4">
         <!-- Records per page -->
         <apex:selectList value="{!size}" multiselect="false" size="1" onchange="refreshPageSize();">
           <apex:selectOptions value="{!paginationSizeOptions}"/>
         </apex:selectList>
 
+        <apex:panelGroup>
         <!-- First page button -->
         <apex:commandButton status="fetchStatus" reRender="pb" value="First" action="{!firstPage}" disabled="{!!HasPrev}" title="First Page"/> 
   
@@ -78,6 +114,7 @@
   
         <!-- Last page button -->
         <apex:commandButton status="fetchStatus" reRender="pb" value="Last" action="{!lastPage}" disabled="{!!HasNext}" title="Last Page"/> 
+      </apex:panelGroup>
 
         <!-- Displaying total amount of related contacts
              and which ones are currently shown -->
@@ -99,4 +136,24 @@
       </apex:panelGrid>
     </apex:pageBlock>
   </apex:form>
+
+  <style type='text/css'>
+    .popup{
+        background-color: lightgrey;
+        border-style: solid;
+        border-radius: 10px;
+        border-width: 1px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        position: fixed;
+        padding: 5px;
+        box-shadow: 0px 0px 7px rgba(1, 1, 1, .5);
+        background: #fff;
+        width: 600px;
+        max-width: 700px;
+    }
+
+    
+    </style>
 </apex:page>
