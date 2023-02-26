@@ -1,7 +1,7 @@
 /**
 * ─────────────────────────────────────────────────────────────────────────────────────────────────┐
 * Utility class for logging errors as "Error__c" custom object records for easier further
-* investigation when error handling.
+* investigation when error handling. See below for the info saved on the record.
 * ──────────────────────────────────────────────────────────────────────────────────────────────────
 * @author         Murat Erkal   <murat-erkal@outlook.com>
 * @version        1.0
