@@ -1,0 +1,194 @@
+<!--
+* ─────────────────────────────────────────────────────────────────────────────────────────────────┐
+* OSF SFCD Academy - Project 1.
+* -  "Set Primary Contact" Visualforce page allows editing the required account fields, and setting
+* the primary contact.
+* -  Pagination and error logging is implemented.
+* -  "Error" custom object is created and errors are logged as "Error__c" records.
+* ──────────────────────────────────────────────────────────────────────────────────────────────────
+* @author         Murat Erkal   <murat-erkal@outlook.com>
+* @version        1.0
+* @created        25-02-2023
+* @modified       26-02-2023
+* @systemLayer    Entrypoint
+* @controller     Standard
+* @controllerex   setPrimaryContactExtension.cls
+* ──────────────────────────────────────────────────────────────────────────────────────────────────
+* @TODO           FIX: icon displayed for primary contact dissapears after closing popup or
+*                 navigating between pages of contact list. Does not affect the function.
+* ─────────────────────────────────────────────────────────────────────────────────────────────────┘
+-->
+
+<apex:page standardController="Account" extensions="setPrimaryContactExtension">
+  <head>
+    <apex:slds /> 
+  </head>
+
+  <apex:form>
+  <!-- Pop-up -->
+    <apex:outputPanel id="popup">
+      <apex:outputPanel styleClass="popup" rendered="{!isShowPopUp}">
+        <apex:pageBlock title="Confirm Your Action">
+          <p style="text-align: center;">Are you sure you want to set <strong>{!contactToUpdate.Name}</strong>, <br/> as the primary contact of <strong>{!Account.Name}</strong>?</p>
+          
+          <apex:pageBlockButtons>
+            <apex:commandButton action="{!updateContacts}" value="Yes" reRender="popup"/>
+            <apex:commandButton action="{!closePopUp}" value="No" reRender="msg,pb,popup" immediate="true"/>
+          </apex:pageBlockButtons>
+        </apex:pageBlock>
+      </apex:outputPanel>
+
+  <!-- Error Pop-up -->
+      <apex:outputPanel id="errpopup">
+        <apex:outputPanel styleClass="popup" rendered="{!isErrorShown}">
+          <apex:pageBlock>
+            <h2><strong>❗❗ Error ❗❗</strong></h2>
+            <p>Could not process your request. Please check both: <br/>1. Primary contact of the account to see if it changed.<br/> 2. The error log in Errors tab for further details.</p>
+
+            <apex:pageBlockButtons>
+              <apex:commandButton action="{!closePopUp}" value="Ok" reRender="msg,pb,popup, errpopup" immediate="true"/>
+            </apex:pageBlockButtons>
+          </apex:pageBlock>
+        </apex:outputPanel>
+      </apex:outputPanel>
+    </apex:outputPanel>
+
+
+  <!-- Account detail -->
+    <apex:pageBlock title="Account Primary Contact">
+      <apex:pageBlockSection columns="2">
+        <apex:inputField value="{! Account.Name }" />
+        <apex:inputField value="{! Account.AccountNumber }" />
+        <apex:inputField value="{! Account.Type }" />
+        <apex:inputField value="{! Account.Active__c }" />
+        <apex:inputField value="{! Account.Phone }" />
+        <apex:inputField value="{! Account.Fax }" />
+      </apex:pageBlockSection>
+      <apex:pageBlockButtons>
+        <apex:commandButton action="{!save}" value="Save" />
+        <apex:commandButton action="{!cancel}" value="Cancel" />
+      </apex:pageBlockButtons>
+    </apex:pageBlock>
+
+
+  <!-- Search by name input -->
+    <apex:pageBlock title="Search Related Contacts">
+      <apex:inputText value="{!inputText}" title="Name"/>
+      <apex:commandButton status="fetchStatus2" value="Search" action="{!refreshNameInput}" reRender="pb">
+        <apex:param value="{!inputText}" assignTo="{!nameInput}"/> 
+      </apex:commandButton>
+
+  <!-- Loading spinner -->
+      <apex:outputPanel >                      
+        <apex:actionStatus id="fetchStatus2" >
+          <apex:facet name="start" >
+            <img src="/img/loading.gif" />                    
+          </apex:facet>
+        </apex:actionStatus>
+      </apex:outputPanel> 
+    </apex:pageBlock>
+
+  <!-- For apex:selectList onchange handler -->
+    <apex:actionFunction name="refreshPageSize" action="{!refreshPageSize}" status="fetchStatus" reRender="pb, icon"/>
+
+  <!-- Related Contacts List with pagination -->
+    <apex:outputPanel id="pb">
+    <apex:pageBlock title="Related Contacts">
+      <apex:pageBlockTable value="{!Contacts}" var="contact">
+        <apex:column headerValue="Name">
+          <apex:outputField value="{!contact.Name}"/>
+        </apex:column>
+        <apex:column headerValue="Title">
+          <apex:outputField value="{!contact.Title}"/>
+        </apex:column>
+        <apex:column headerValue="Phone">
+          <apex:outputField value="{!contact.Phone}"/>
+        </apex:column>
+        <apex:column headerValue="Is Primary Contact">
+          <apex:outputField value="{!contact.Is_Primary_Contact__c}"/>
+        </apex:column>
+        <apex:column>
+
+  <!-- If contact is the primary, show icon -->
+          <apex:outputPanel id="icon">
+            <apex:outputPanel rendered="{!contact.Is_Primary_Contact__c}">
+              <span class="slds-icon_container slds-icon-utility-check">
+                <svg aria-hidden="true" class="slds-icon slds-icon-text-default">
+                  <use xmlns:xlink="http://www.w3.org/1999/xlink" 
+                     xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#check">
+                  </use>
+                </svg>
+              <span class="slds-assistive-text">This is the primary contact.</span>
+              </span>
+            </apex:outputPanel>
+          </apex:outputPanel>
+
+  <!-- If contact is not the primary, show link -->
+          <apex:commandLink rendered="{!!contact.Is_Primary_Contact__c}" value="Set Primary Contact" action="{!showPopUp}" reRender="popup"
+          >
+            <apex:param name="contactToUpdateId" value="{!contact.Id}" assignTo="{!contactToUpdateId}"/>
+          </apex:commandLink>
+        </apex:column>
+      </apex:pageBlockTable>
+    
+
+  <!-- Pagination -->
+      <apex:panelGrid columns="4">
+  <!-- Records per page -->
+        <apex:selectList value="{!size}" multiselect="false" size="1" onchange="refreshPageSize();">
+          <apex:selectOptions value="{!paginationSizeOptions}"/>
+        </apex:selectList>
+
+        <apex:panelGroup>
+  <!-- First page button -->
+        <apex:commandButton status="fetchStatus" reRender="pb, icon" value="First" action="{!firstPage}" disabled="{!!HasPrev}" title="First Page"/> 
+  
+  <!-- Previous page button -->
+        <apex:commandButton status="fetchStatus" reRender="pb, icon" value="Previous" action="{!prevPage}" disabled="{!!HasPrev}" title="Previous Page"/> 
+  
+  <!-- Next page button -->
+        <apex:commandButton status="fetchStatus" reRender="pb, icon" value="Next" action="{!nextPage}" disabled="{!!HasNext}" title="Next Page"/> 
+  
+  <!-- Last page button -->
+        <apex:commandButton status="fetchStatus" reRender="pb, icon" value="Last" action="{!lastPage}" disabled="{!!HasNext}" title="Last Page"/> 
+      </apex:panelGroup>
+
+  <!-- Displaying total amount of related contacts and which ones are currently shown -->
+        <apex:outputText >{!(page * size) + 1 - size} - 
+                          {!IF((page * size) > noOfRecords,
+                          noOfRecords,
+                          (page * size))} of {!noOfRecords}
+        </apex:outputText>
+
+  <!-- Loading spinner -->
+        <apex:outputPanel >                      
+          <apex:actionStatus id="fetchStatus" >
+              <apex:facet name="start" >
+                <img src="/img/loading.gif" />                    
+              </apex:facet>
+            </apex:actionStatus>
+          </apex:outputPanel> 
+
+      </apex:panelGrid>
+    </apex:pageBlock>
+  </apex:outputPanel>
+  </apex:form>
+
+  <style type='text/css'>
+    .popup{
+        background-color: lightgrey;
+        border-style: solid;
+        border-radius: 10px;
+        border-width: 1px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        position: fixed;
+        padding: 5px;
+        box-shadow: 0px 0px 7px rgba(1, 1, 1, .5);
+        background: #fff;
+        width: 600px;
+        max-width: 700px;
+    }
+    </style>
+</apex:page>
