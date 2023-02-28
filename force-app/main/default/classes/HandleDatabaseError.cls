@@ -1,3 +1,14 @@
+/**
+* ─────────────────────────────────────────────────────────────────────────────────────────────────┐
+* Utility class for logging database errors as "Error__c" custom object records for easier further investigation when error handling. See below for the info saved on the record.
+──────────────────────────────────────────────────────────────────────────────────────────────────
+* @author         Murat Erkal   <murat-erkal@outlook.com>
+* @version        1.0
+* @created        27-02-2023
+* @modified       27-02-2023
+─────────────────────────────────────────────────────────────────────────────────────────────────┘
+*/
+
 public with sharing class HandleDatabaseError {
     public static void logError(List<Database.SaveResult> saveResults, List<SObject> objectList, String topic, String className){
         try{

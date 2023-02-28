@@ -1,3 +1,19 @@
+/**
+* ─────────────────────────────────────────────────────────────────────────────────────────────────┐
+* A queueable class for updating Primary Contact Phone field of all secondary contacts of an account when a primary contact is set.
+* Takes a Map of AccountId-Contact key-value pair,
+* Finds all the secondary contacts of the account,
+* Updates their Primary Contact Phone field to the primary contact's phone value,
+* Sends the Database.SaveResult list to the 'HandleDatabaseError' utility class to log possible errors as custom error objects.
+──────────────────────────────────────────────────────────────────────────────────────────────────
+* @author         Murat Erkal   <murat-erkal@outlook.com>
+* @version        1.0
+* @created        27-02-2023
+* @modified       27-02-2023
+* @utilClasses    HandleDatabaseError.cls
+* ─────────────────────────────────────────────────────────────────────────────────────────────────┘
+*/
+
 global class UpdateContactsPhone implements Queueable {
     private Map<Id, Contact> conMap;
 
