@@ -39,11 +39,13 @@ trigger UpdateContactsPrimaryPhone on Contact (before insert, before update) {
   
 
     //List for storing the ids of accounts mentioned above.
-    List<Id> accsWithPrimary = new List<Id>();
+    Set<Id> accsWithPrimary = new Set<Id>();
 
-    //Put the ids of those accounts in a list.
-    for (Contact con : accsQuery) {
-      accsWithPrimary.add(con.AccountId);
+    if (accsQuery.size() > 0) {
+      //Put the ids of those accounts in a list.
+      for (Contact con : accsQuery) {
+        accsWithPrimary.add(con.AccountId);
+      }
     }
 
     //loop over the filtered list to add error on the contacts related to accounts with a primary contact set.
@@ -84,7 +86,9 @@ trigger UpdateContactsPrimaryPhone on Contact (before insert, before update) {
       
     }
 
-    UpdateContactsPhone updateJob = new UpdateContactsPhone(primaryCons);
+    if (primaryCons.size() > 0) {
+      UpdateContactsPhone updateJob = new UpdateContactsPhone(primaryCons);
     System.enqueueJob(updateJob);
+    }
   }
 }

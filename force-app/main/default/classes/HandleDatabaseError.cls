@@ -34,9 +34,7 @@ public with sharing class HandleDatabaseError {
             if (errorList.size() > 0) {
                 insert errorList;
             }
-        } catch (Exception e) {
-            //if the insert fails, log it as a custom error.
-            HandleException.LogError(e);
+        } finally {
         }
     }
 }
