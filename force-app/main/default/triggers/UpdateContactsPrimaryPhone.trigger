@@ -1,3 +1,19 @@
+/**
+* ─────────────────────────────────────────────────────────────────────────────────────────────────┐
+* Validates the Contact objects before insert and update.
+* Validates that if the contact is set as primary contact, the related account doesn't already have a primary contact set. If it does, trigger will throw an error.
+* Designed for bulk, and possible multiple primary contacts being set within a bulk.
+* If a contact is set as primary and passes the validation, it gets added to the map, with its AccountId as the key.
+* Then finally, the map is sent to the UpdateContactsPhone queueable job, so that the secondary contacts get updated asynchronously.
+──────────────────────────────────────────────────────────────────────────────────────────────────
+* @author         Murat Erkal   <murat-erkal@outlook.com>
+* @version        1.0
+* @created        27-02-2023
+* @modified       27-02-2023
+* @utilClasses    UpdateContactsPhone.cls
+* ─────────────────────────────────────────────────────────────────────────────────────────────────┘
+*/
+
 trigger UpdateContactsPrimaryPhone on Contact (before insert, before update) {
   //Map for contacts which past the validation.
   Map<Id, Contact> primaryCons = new Map<Id, Contact>();
