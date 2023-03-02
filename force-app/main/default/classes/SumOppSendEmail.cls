@@ -1,3 +1,24 @@
+/**
+* ─────────────────────────────────────────────────────────────────────────────────────────────────┐
+* Batch class that when executed: 
+* Gets all the accounts, their primary contacts, and their 
+opportunities created or edited this current month,
+* Summarizes the opportunities and maps them with their related
+accounts.
+* Also puts all the primary contacts with emails to a list.
+* Creates a SingleEmailMessage for each primary contact, with their
+accounts' summarized opportunities.
+* Sends the list of SingleEmailMessages to the SendAndLogEmails
+class for them to be sent and their results to be logged.
+──────────────────────────────────────────────────────────────────────────────────────────────────
+* @author         Murat Erkal   <murat-erkal@outlook.com>
+* @version        1.0
+* @created        01-03-2023
+* @modified       01-03-2023
+* @utilClasses    SendAndLogEmails.cls
+* ─────────────────────────────────────────────────────────────────────────────────────────────────┘
+*/
+
 public class SumOppSendEmail implements Database.Batchable<sObject> {
     public Database.QueryLocator start(Database.BatchableContext bc) {
         //this query returns all accounts, all of their opportunities created/edited this month and all the contacts available to be emailed

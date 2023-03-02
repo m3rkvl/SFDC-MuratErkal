@@ -1,5 +1,21 @@
+  /**
+  * ───────────────────────────────────────────────────────────────────────────────────────────────┐
+* @author         Murat Erkal   <murat-erkal@outlook.com>
+* @version        1.0
+* @created        01-03-2023
+* @modified       01-03-2023
+  ───────────────────────────────────────────────────────────────────────────────────────────────┘
+  */
+
 @isTest
 private class SumOppSendEmailTest {
+
+  /**
+  ───────────────────────────────────────────────────────────────────────────────────────────────┐
+  * Prepares the data necessary for this test class to run.
+  * 10 accounts, 3 opportunities, and 2 primary contacts.
+  ───────────────────────────────────────────────────────────────────────────────────────────────┘
+  */
     @testSetup
     static void setup() {
         List<Account> accounts = new List<Account>();
@@ -22,6 +38,12 @@ private class SumOppSendEmailTest {
         insert contacts;
     }
 
+  /**
+  ───────────────────────────────────────────────────────────────────────────────────────────────┐
+  * Starts the test and executes the batch class.
+  * Asserts that 2 email logs are inserted, they are sent to the correct emails, and that they succeeded.
+  ───────────────────────────────────────────────────────────────────────────────────────────────┘
+  */
     @isTest static void test() {
         Test.startTest();
         SumOppSendEmail myBatch = new SumOppSendEmail();
