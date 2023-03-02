@@ -1,3 +1,20 @@
+  /**
+  * ───────────────────────────────────────────────────────────────────────────────────────────────┐
+  * Test class for the ScheduleSumOppSendEmail schedule class
+  * Asserts that there are no async jobs,
+  * Schedules with the class 3 times, using three methods defined
+  in the class
+  * Asserts that the Cron Expressions are all accurate,
+  * Asserts that 3 ScheduledApex jobs are enqueued, and that
+  their class name matches.
+  ──────────────────────────────────────────────────────────────────────────────────────────────────
+* @author         Murat Erkal   <murat-erkal@outlook.com>
+* @version        1.0
+* @created        01-03-2023
+* @modified       01-03-2023
+  ───────────────────────────────────────────────────────────────────────────────────────────────┘
+  */
+
 @isTest
 private class ScheduleSumOppSendEmailTest {
     public static String CRON_EXP_DAILY = '0 0 10 * * ? *';

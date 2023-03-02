@@ -1,5 +1,27 @@
+  /**
+  * ───────────────────────────────────────────────────────────────────────────────────────────────┐
+* @author         Murat Erkal   <murat-erkal@outlook.com>
+* @version        1.0
+* @created        01-03-2023
+* @modified       01-03-2023
+  ───────────────────────────────────────────────────────────────────────────────────────────────┘
+  */
+
 @isTest
 public class setPrimaryContactExtensionTest {
+
+  /**
+  ───────────────────────────────────────────────────────────────────────────────────────────────┐
+  * Creates 2 contact objects and inserts them.
+  * Prepares the test page as setPrimaryContact page and controller
+  with extension.
+  * Puts the parameter (contact id to set as primary) needed for 
+  the page in the test.
+  * Starts the test and tries to set the contact as primary without
+  validating with popup.
+  * Asserts that the contact isn't set as primary.
+  ───────────────────────────────────────────────────────────────────────────────────────────────┘
+  */
     @isTest static void testError() {
         /////////////////////////////////////////////
         //Create test data.
@@ -35,6 +57,14 @@ public class setPrimaryContactExtensionTest {
         System.assertEquals(false, primaryCon.Is_Primary_Contact__c);
     }
 
+  /**
+  ───────────────────────────────────────────────────────────────────────────────────────────────┐
+  * Prepares the page as needed (enough contacts to have two pages).
+  * Starts the test, gets the hasNext value, goes to the next page,
+   and gets the hasPrev values used for pagination.
+  * Asserts that values are true.
+  ───────────────────────────────────────────────────────────────────────────────────────────────┘
+  */
     @isTest static void testNextPrevPages() {
         /////////////////////////////////////////////
         // Create test data.
@@ -74,6 +104,20 @@ public class setPrimaryContactExtensionTest {
         System.assertEquals(true, hasPrevTest);
     }
 
+
+  /**
+  ───────────────────────────────────────────────────────────────────────────────────────────────┐
+  * Creates 2 contact objects and inserts them.
+  * Prepares the test page as setPrimaryContact page and controller
+  with extension.
+  * Puts the parameter (contact id to set as primary) needed for 
+  the page in the test.
+  * Starts the test and sets the contact as primary.
+  * Asserts that the contact is set as primary.
+  * Also uses the page changing methods and asserts that
+  pagination works as intended.
+  ───────────────────────────────────────────────────────────────────────────────────────────────┘
+  */
     @isTest static void testSuccess() {
         /////////////////////////////////////////////
         // Create test data.
