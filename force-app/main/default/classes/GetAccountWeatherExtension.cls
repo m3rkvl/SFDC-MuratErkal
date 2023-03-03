@@ -33,15 +33,15 @@ public with sharing class GetAccountWeatherExtension {
 
     public PageReference getWeather() {
         //if the account has a billing city
-        if (acct.BillingCity != null) {
+        if (acct.BillingCity != null && !String.isBlank(acct.BillingCity)) {
 
             //set the hasAddress state as true
             hasAddress = true;
             
             //get cached values
-            String cachedDesc = (String)orgPart.get(acct.BillingCity + 'WeatherDesc');
-            String cachedTemp = (String)orgPart.get(acct.BillingCity + 'WeatherTemp');
-            String cachedIcon = (String)orgPart.get(acct.BillingCity + 'WeatherIcon');
+            String cachedDesc = (String)orgPart.get(acct.BillingCity.replaceAll( '\\s+', '') + 'WeatherDesc');
+            String cachedTemp = (String)orgPart.get(acct.BillingCity.replaceAll( '\\s+', '') + 'WeatherTemp');
+            String cachedIcon = (String)orgPart.get(acct.BillingCity.replaceAll( '\\s+', '') + 'WeatherIcon');
 
             //if there are cached values for this city, use them
             //instead of making an http call
@@ -77,9 +77,9 @@ public with sharing class GetAccountWeatherExtension {
                     iconUrl = IMG_URL + resBody.weather[0].icon + '.png';
 
                     //put the values into the cache
-                    orgPart.put(acct.BillingCity + 'WeatherDesc', resBody.weather[0].description);
-                    orgPart.put(acct.BillingCity + 'WeatherTemp', String.valueOf(resBody.Main.temp));
-                    orgPart.put(acct.BillingCity + 'WeatherIcon', resBody.weather[0].icon);
+                    orgPart.put(acct.BillingCity.replaceAll( '\\s+', '') + 'WeatherDesc', resBody.weather[0].description);
+                    orgPart.put(acct.BillingCity.replaceAll( '\\s+', '') + 'WeatherTemp', String.valueOf(resBody.Main.temp));
+                    orgPart.put(acct.BillingCity.replaceAll( '\\s+', '') + 'WeatherIcon', resBody.weather[0].icon);
 
                 //if the http request fails
                 } else {
