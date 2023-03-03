@@ -1,0 +1,55 @@
+<!--
+* ─────────────────────────────────────────────────────────────────────────────────────────────────┐
+* OSF SFCD Academy - Project 4.
+* -  "Get Account Weather" Visualforce page fetches and displays the weather of the city the account is in.
+* -  Data is also cached for better performance.
+* -  "Error" custom object is created and errors are logged as "Error__c" records.
+* If there was an error, user is informed of the error.
+──────────────────────────────────────────────────────────────────────────────────────────────────
+* @author         Murat Erkal   <murat-erkal@outlook.com>
+* @version        1.0
+* @created        25-02-2023
+* @modified       26-02-2023
+* @systemLayer    Entrypoint
+* @controller     Standard
+* @controllerex   setPrimaryContactExtension.cls
+* ──────────────────────────────────────────────────────────────────────────────────────────────────
+* @NOTE           Caching the data won't be useful if the user
+*                 needs to see the weather as accurate as possible.
+─────────────────────────────────────────────────────────────────────────────────────────────────┘
+-->
+
+<apex:page standardController="Account" extensions="GetAccountWeatherExtension" action="{!getWeather}">
+
+  <!-- If the weather is fetched successfully -->
+  <apex:pageBlock rendered="{! AND(hasAddress, isSuccess)}" title="Weather In {!Account.BillingCity}:">
+    <apex:pageBlockSection >
+      <apex:pageBlockSectionItem>
+        <apex:outputLabel value="Description" for="description"/>
+        <apex:outputText id="description" value="{!description}"/>
+      </apex:pageBlockSectionItem>
+      <apex:pageBlockSectionItem>
+        <apex:outputLabel value="Temperature" for="temperature"/>
+        <apex:outputText id="temperature" value="{!temperature}"/>
+      </apex:pageBlockSectionItem>
+      <apex:pageBlockSectionItem>
+        <apex:outputLabel value=" " for="icon"/>
+        <apex:image id="icon" alt="Weather condition icon" url="{!iconUrl}"/>
+      </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+  </apex:pageBlock>
+
+  <!-- If there are any errors -->
+  <apex:pageBlock title="Could Not Fetch The Weather" rendered="{!(!hasAddress || !isSuccess)}">
+    <apex:pageBlockSection>
+      <apex:pageBlockSectionItem rendered="{!(!hasAddress)}">
+        <apex:outputLabel value="Message" for="messageAddress"/>
+        <apex:outputText id="messageAddress" value="{!errMessage}"/>
+      </apex:pageBlockSectionItem>
+      <apex:pageBlockSectionItem rendered="{!(hasAddress && !isSuccess)}">
+        <apex:outputLabel value="Message" for="messageSuccess"/>
+        <apex:outputText id="messageSuccess" value="{!errMessage}"/>
+      </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+  </apex:pageBlock>
+</apex:page>
